@@ -4,12 +4,14 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db, engine, Base
 from app.users import models
 from app.users.routes import router as users_router
+from app.ai.routes import router as ai_router
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="DoKi Backend")
 
 app.include_router(users_router)
+app.include_router(ai_router)
 
 
 @app.get("/")
