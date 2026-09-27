@@ -10,11 +10,12 @@ export class ApiError extends Error {
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = typeof window !== "undefined" ? localStorage.getItem("doki-token") : null;
+  const isFormData = options.body instanceof FormData;
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers: {
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.body && !isFormData ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
@@ -23,8 +24,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message =
-      typeof data?.detail === "string" ? data.detail : "Something went wrong. Please try again.";
+    const message = typeof data?.detail === "string" ? data.detail : "Something went wrong. Please try again.";
     throw new ApiError(message, res.status);
   }
 
@@ -35,6 +35,7 @@ export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
+  postForm: <T>(path: string, formData: FormData) => request<T>(path, { method: "POST", body: formData }),
   put: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "PUT", body: body ? JSON.stringify(body) : undefined }),
 };
