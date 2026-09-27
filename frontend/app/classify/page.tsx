@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useAuthGuard } from "@/lib/use-auth-guard";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { ImageUploadCard } from "@/components/ai/ImageUploadCard";
 import { ClassificationResult } from "@/components/ai/ClassificationResult";
 import { ClassificationHistory } from "@/components/ai/ClassificationHistory";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { api } from "@/lib/api/client";
 import type { Classification } from "@/types/ai";
 
@@ -37,12 +36,7 @@ export default function ClassifyPage() {
 
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-6 py-10">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="font-display text-xl text-ink">
-          DoKi
-        </Link>
-        <ThemeToggle />
-      </div>
+      <AppHeader />
 
       <div className="mt-10 grid gap-8 lg:grid-cols-2">
         <div className="flex flex-col gap-6">

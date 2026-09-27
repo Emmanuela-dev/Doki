@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 export function useAuthGuard() {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem("doki-token");
-    if (!token) {
+    if (!loading && !user) {
       router.replace("/login");
-      return;
     }
-    setReady(true);
-  }, [router]);
+  }, [loading, user, router]);
 
-  return ready;
+  return !loading && !!user;
 }

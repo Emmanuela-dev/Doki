@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { api, ApiError } from "@/lib/api/client";
+import { useAuth } from "@/lib/auth-context";
 import type { LoginPayload, TokenResponse } from "@/types/auth";
 
 export function LoginForm() {
   const router = useRouter();
+  const { setToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,8 +28,8 @@ export function LoginForm() {
 
     try {
       const res = await api.post<TokenResponse>("/api/auth/login", payload);
-      localStorage.setItem("doki-token", res.access_token);
-      router.push("/");
+      await setToken(res.access_token);
+      router.push("/classify");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Login failed. Please try again.");
     } finally {
