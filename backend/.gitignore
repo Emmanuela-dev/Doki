@@ -9,25 +9,11 @@ build/
 .eggs/
 *.egg
 
-# Virtual environments
-.venv/
+# Virtual environment
 venv/
-env/
-ENV/
 
 # Environment variables
 .env
 
-# Uploads (local dev)
-uploads/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Alembic
-alembic/versions/*.pyc
+# Testing
+.pytest_cache/
