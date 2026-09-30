@@ -1,5 +1,19 @@
-venv/
+# Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environment
+venv/
+
+# Environment variables
 .env
+
+# Testing
 .pytest_cache/

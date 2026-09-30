@@ -1,0 +1,32 @@
+# ---- Python / FastAPI backend ----
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+backend/.env
+backend/*.env
+
+# ---- Node / Next.js frontend ----
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env
+frontend/.env.local
+frontend/*.env*
+
+# ---- General env files (catch-all, any location) ----
+.env
+.env.*
+!.env.example
+
+# ---- Editor / OS ----
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ---- Logs ----
+*.log
+npm-debug.log*
