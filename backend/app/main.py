@@ -1,12 +1,15 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from app.db.database import get_db, engine, Base
-from app.users import models as user_models
+
 from app.ai import models as ai_models
-from app.users.routes import router as users_router
 from app.ai.routes import router as ai_router
+from app.db.database import Base, engine, get_db
+from app.payments.router import router as payments_router
+from app.users import models as user_models
+from app.users.routes import router as users_router
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -22,11 +25,17 @@ app.add_middleware(
 
 app.include_router(users_router)
 app.include_router(ai_router)
+app.include_router(payments_router)
 
 
 @app.get("/")
 def read_root():
     return {"message": "DoKi backend is running"}
+
+
+@app.get("/health")
+async def health() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 @app.get("/db-check")

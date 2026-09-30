@@ -70,3 +70,5 @@ uritemplate==4.2.0
 urllib3==2.8.0
 uvicorn[standard]==0.29.0
 uvicorn==0.54.0
+pytest>=8,<9
+pytest-asyncio>=0.23,<1

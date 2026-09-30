@@ -255,7 +255,18 @@ The initial platform is planned as a web application.
 
 ### Payments
 
-* M-Pesa / Safaricom Daraja API
+* M-Pesa through Kopo Kopo
+
+### Kopo Kopo setup
+
+The backend payment endpoints are available under `/api/v1/payments`. Copy
+`backend/.env.example` to the deployment environment and provide the Kopo Kopo
+client credentials, till number, and a publicly reachable callback URL. The
+`POST /api/v1/payments/mpesa` endpoint starts an M-Pesa STK push; Kopo Kopo
+notifies `POST /api/v1/payments/callbacks/kopokopo` when the payment changes.
+
+Payment state is process-local until the project database layer is implemented;
+the callback should then update the corresponding transaction record.
 
 ### Maps & Location
 
