@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.users.models import User
@@ -23,6 +24,11 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    if user_in.phone:
+        existing_phone = db.query(User).filter(User.phone == user_in.phone).first()
+        if existing_phone:
+            raise HTTPException(status_code=400, detail="Phone number already registered")
+
     new_user = User(
         full_name=user_in.full_name,
         business_name=user_in.business_name,
@@ -32,7 +38,15 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         role=user_in.role,
     )
     db.add(new_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Safety net for races or any other unique constraint: return a clean 400
+        # instead of an unhandled 500 (which the browser reports as a CORS error).
+        db.rollback()
+        raise HTTPException(
+            status_code=400, detail="An account with these details already exists"
+        )
     db.refresh(new_user)
     return new_user
 
