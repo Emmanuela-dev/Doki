@@ -9,10 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
+from app.db.supabase import get_supabase
 from app.listings.router import router as listings_router
 from app.marketplace.router import router as marketplace_router
 from app.marketplace.location_router import router as location_router
 from app.marketplace.transactions_router import router as transactions_router
+from app.users.supabase_routes import router as auth_router
 
 # ---------------------------------------------------------------------------
 # App
@@ -59,6 +61,7 @@ app.include_router(listings_router,     prefix=API_PREFIX)
 app.include_router(marketplace_router,  prefix=API_PREFIX)
 app.include_router(location_router,     prefix=API_PREFIX)
 app.include_router(transactions_router, prefix=API_PREFIX)
+app.include_router(auth_router)
 
 # ---------------------------------------------------------------------------
 # Health check
@@ -77,3 +80,9 @@ def root():
 @app.get("/health", tags=["Health"])
 def health():
     return {"status": "ok"}
+
+
+@app.get("/db-check", tags=["Health"])
+def db_check():
+    response = get_supabase().table("users").select("id").limit(1).execute()
+    return {"database": "connected", "rows_checked": len(response.data)}

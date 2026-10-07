@@ -29,7 +29,7 @@ export function LoginForm() {
     try {
       const res = await api.post<TokenResponse>("/api/auth/login", payload);
       await setToken(res.access_token);
-      router.push("/classify");
+      router.push("/dashboard");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Login failed. Please try again.");
     } finally {

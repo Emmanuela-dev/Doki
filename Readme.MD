@@ -243,7 +243,34 @@ The initial platform is planned as a web application.
 
 ### Database
 
-* PostgreSQL
+* Supabase (database API)
+
+### Supabase database setup
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In **Project Settings → API**, copy the project URL and the
+   `service_role` key. The service-role key is server-only: never expose it in
+   the frontend or commit it.
+3. Copy `backend/.env.example` to `backend/.env`.
+4. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in `backend/.env`.
+5. Install the backend requirements and start the API:
+
+   ```powershell
+   cd C:\Users\Emmanuela\Desktop\projects\Doki1\backend
+   ..\.venv\Scripts\python.exe -m pip install -r requirements.txt
+   ..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+   ```
+
+6. Verify the connection using `/db-check`. The `users` table must exist in
+   Supabase for this check.
+
+The Supabase client is the database API for new operations. Existing legacy
+routes that use SQLAlchemy models still need to be migrated to Supabase table
+operations before those routes are fully switched.
+
+The current SQL schema is in
+[`backend/db/schema.sql`](backend/db/schema.sql). Run it in the Supabase SQL
+Editor before starting the API.
 
 ### AI
 
