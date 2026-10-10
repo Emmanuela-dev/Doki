@@ -27,7 +27,7 @@ def test_phone_number_is_normalized_to_kenyan_format() -> None:
 
 
 @pytest.mark.asyncio
-async def test_initiation_requests_k2_v2_stk_push_without_till() -> None:
+async def test_initiation_requests_k2_v2_stk_push_to_configured_till() -> None:
     requests: list[httpx.Request] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -39,6 +39,7 @@ async def test_initiation_requests_k2_v2_stk_push_without_till() -> None:
     configuration = Settings(
         kopokopo_client_id="client-id",
         kopokopo_client_secret="client-secret",
+        kopokopo_till_number="123456",
         payment_callback_url="https://doki.example/api/payments/kopokopo/callback",
         kopokopo_api_version="v2",
     )
@@ -56,11 +57,46 @@ async def test_initiation_requests_k2_v2_stk_push_without_till() -> None:
     assert result.status == PAYMENT_PROCESSING
     assert requests[1].headers["Authorization"] == "Bearer test-token"
     assert requests[1].headers["Accept"] == "application/vnd.kopokopo.v2+json"
+    assert requests[1].url.path == "/api/v2/incoming_payments"
     request_body = json.loads(requests[1].content)
-    assert request_body["payment_method"] == "mpesa_stk_push"
-    assert "till_number" not in request_body
+    assert request_body["payment_channel"] == "M-PESA STK Push"
+    assert request_body["till_number"] == "123456"
     assert request_body["subscriber"]["phone_number"] == "254712345678"
     assert request_body["metadata"]["transaction_id"] == "TX-1"
+
+
+def test_callback_reads_kopokopo_event_amount() -> None:
+    payment_id = "payment-kopokopo-callback"
+    _payments[payment_id] = PaymentStatus(
+        id=payment_id,
+        transaction_id="TX-kopokopo-callback",
+        status=PAYMENT_PROCESSING,
+        amount=Decimal("50.00"),
+        phone_number="254712345678",
+        provider="KOPOKOPO",
+    )
+
+    result = process_callback(
+        {
+            "data": {
+                "id": "provider-payment-1",
+                "attributes": {
+                    "status": "Success",
+                    "event": {
+                        "resource": {
+                            "amount": "50.00",
+                        }
+                    },
+                    "metadata": {
+                        "payment_id": payment_id,
+                    },
+                },
+            }
+        }
+    )
+
+    assert result is not None
+    assert result.status == PAID
 
 
 def test_callback_marks_payment_paid_only_after_provider_success() -> None:

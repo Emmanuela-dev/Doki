@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     kopokopo_client_id: str = Field(default="", validation_alias="KOPOKOPO_CLIENT_ID")
     kopokopo_client_secret: str = Field(default="", validation_alias="KOPOKOPO_CLIENT_SECRET")
     kopokopo_base_url: str = Field(default="https://api.kopokopo.com", validation_alias="KOPOKOPO_BASE_URL")
+    kopokopo_till_number: str = Field(default="", validation_alias="KOPOKOPO_TILL_NUMBER")
     payment_callback_url: str = Field(default="", validation_alias="PAYMENT_CALLBACK_URL")
     kopokopo_api_version: str = Field(default="v2", validation_alias="KOPOKOPO_API_VERSION")
     kopokopo_webhook_secret: str = Field(default="", validation_alias="KOPOKOPO_WEBHOOK_SECRET")

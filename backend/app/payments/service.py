@@ -37,6 +37,7 @@ class KopoKopoClient:
             for name, value in (
                 ("KOPOKOPO_CLIENT_ID", self.configuration.kopokopo_client_id),
                 ("KOPOKOPO_CLIENT_SECRET", self.configuration.kopokopo_client_secret),
+                ("KOPOKOPO_TILL_NUMBER", self.configuration.kopokopo_till_number),
                 ("PAYMENT_CALLBACK_URL", self.configuration.payment_callback_url),
             )
             if not value
@@ -66,7 +67,8 @@ class KopoKopoClient:
             "Content-Type": f"application/vnd.kopokopo.{api_version}+json",
         }
         payload: dict[str, Any] = {
-            "payment_method": "mpesa_stk_push",
+            "payment_channel": "M-PESA STK Push",
+            "till_number": self.configuration.kopokopo_till_number,
             "subscriber": {"phone_number": payment.phone_number},
             "amount": {"currency": "KES", "value": str(payment.amount)},
             "metadata": {"payment_id": payment_id, "transaction_id": payment.transaction_id},
@@ -77,8 +79,13 @@ class KopoKopoClient:
 
         async with httpx.AsyncClient(base_url=self.configuration.kopokopo_base_url) as client:
             token = await self._access_token(client)
-            headers["Authorization"] = f"Bearer {token}"
-            response = await client.post("/api/v1/incoming_payments", json=payload, headers=headers)
+
+            headers["Authorization"] = "Bearer " + token
+            response = await client.post(
+                f"/api/{api_version}/incoming_payments",
+                json=payload,
+                headers=headers,
+            )
 
         if response.is_error:
             raise PaymentProviderError(f"Kopo Kopo STK Push failed ({response.status_code})")
@@ -111,7 +118,15 @@ def _callback_value(payload: dict[str, Any], name: str) -> Any:
     data = payload.get("data") or {}
     attributes = data.get("attributes") or {}
     metadata = payload.get("metadata") or data.get("metadata") or attributes.get("metadata") or {}
-    return payload.get(name) or data.get(name) or attributes.get(name) or metadata.get(name)
+    event = attributes.get("event") or {}
+    resource = event.get("resource") or {}
+    return (
+        payload.get(name)
+        or data.get(name)
+        or attributes.get(name)
+        or metadata.get(name)
+        or resource.get(name)
+    )
 
 
 def _callback_status(payload: dict[str, Any]) -> str:
