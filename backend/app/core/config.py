@@ -1,18 +1,21 @@
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     SUPABASE_URL: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
+    DATABASE_URL: str = "sqlite:///./doki.db"
 
     SECRET_KEY: str = "changeme-use-a-real-secret-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200
 
     GOOGLE_MAPS_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.0-flash"
 
     STORAGE_BACKEND: str = "local"
     LOCAL_UPLOAD_DIR: str = "uploads"
@@ -24,13 +27,13 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
 
-    kopokopo_client_id: str = Field(default="", validation_alias="KOPOKOPO_CLIENT_ID")
-    kopokopo_client_secret: str = Field(default="", validation_alias="KOPOKOPO_CLIENT_SECRET")
-    kopokopo_base_url: str = Field(default="https://api.kopokopo.com", validation_alias="KOPOKOPO_BASE_URL")
-    kopokopo_till_number: str = Field(default="", validation_alias="KOPOKOPO_TILL_NUMBER")
-    payment_callback_url: str = Field(default="", validation_alias="PAYMENT_CALLBACK_URL")
-    kopokopo_api_version: str = Field(default="v2", validation_alias="KOPOKOPO_API_VERSION")
-    kopokopo_webhook_secret: str = Field(default="", validation_alias="KOPOKOPO_WEBHOOK_SECRET")
+    kopokopo_client_id: str = Field(default="", validation_alias=AliasChoices("kopokopo_client_id", "KOPOKOPO_CLIENT_ID"))
+    kopokopo_client_secret: str = Field(default="", validation_alias=AliasChoices("kopokopo_client_secret", "KOPOKOPO_CLIENT_SECRET"))
+    kopokopo_base_url: str = Field(default="https://api.kopokopo.com", validation_alias=AliasChoices("kopokopo_base_url", "KOPOKOPO_BASE_URL"))
+    kopokopo_till_number: str = Field(default="", validation_alias=AliasChoices("kopokopo_till_number", "KOPOKOPO_TILL_NUMBER"))
+    payment_callback_url: str = Field(default="", validation_alias=AliasChoices("payment_callback_url", "PAYMENT_CALLBACK_URL"))
+    kopokopo_api_version: str = Field(default="v2", validation_alias=AliasChoices("kopokopo_api_version", "KOPOKOPO_API_VERSION"))
+    kopokopo_webhook_secret: str = Field(default="", validation_alias=AliasChoices("kopokopo_webhook_secret", "KOPOKOPO_WEBHOOK_SECRET"))
 
     @property
     def origins(self) -> list[str]:
@@ -39,6 +42,7 @@ class Settings(BaseSettings):
     model_config = {
         "env_file": Path(__file__).resolve().parents[2] / ".env",
         "extra": "ignore",
+        "populate_by_name": True,
     }
 
 

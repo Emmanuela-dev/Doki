@@ -6,6 +6,8 @@ from app.core.config import settings
 
 def _sqlalchemy_database_url(url: str) -> str:
     """Make a Supabase/PostgreSQL URL explicit for the psycopg driver."""
+    if url.startswith("sqlite"):
+        return url
     if url.startswith("postgres://"):
         return "postgresql+psycopg://" + url[len("postgres://"):]
     if url.startswith("postgresql://"):
@@ -26,7 +28,8 @@ if not settings.DATABASE_URL:
 
 DATABASE_URL = _sqlalchemy_database_url(settings.DATABASE_URL)
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args=connect_args)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

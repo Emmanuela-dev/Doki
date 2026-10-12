@@ -2,9 +2,9 @@ import os
 import json
 import google.generativeai as genai
 from dotenv import load_dotenv
+from app.core.config import settings
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 CATEGORIES = [
     "Food waste",
@@ -38,7 +38,12 @@ set confidence to "Low", and explain why in the description.
 
 
 def classify_image(image_bytes: bytes, mime_type: str) -> dict:
-    model = genai.GenerativeModel("gemini-3.8-flash")
+    api_key = settings.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY is not configured")
+
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(settings.GEMINI_MODEL)
     response = model.generate_content(
         [
             {"mime_type": mime_type, "data": image_bytes},

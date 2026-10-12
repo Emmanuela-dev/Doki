@@ -8,6 +8,7 @@ backend/__pycache__/
 .pytest_cache/
 backend/.env
 backend/*.env
+backend/doki.db
 
 # ---- Node / Next.js frontend ----
 frontend/node_modules/

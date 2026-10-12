@@ -92,7 +92,8 @@ def test_callback_reads_kopokopo_event_amount() -> None:
                     },
                 },
             }
-        }
+        },
+        configuration=Settings(kopokopo_webhook_secret=""),
     )
 
     assert result is not None
@@ -123,7 +124,8 @@ def test_callback_marks_payment_paid_only_after_provider_success() -> None:
             "status": "success",
             "metadata": {"payment_id": payment_id, "transaction_id": "TX-callback"},
             "amount": {"value": "50.00"},
-        }
+        },
+        configuration=Settings(kopokopo_webhook_secret=""),
     )
 
     assert result is not None
