@@ -4,17 +4,19 @@ FastAPI application entry point.
 """
 
 import os
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.db.supabase import get_supabase
+from app.db.database import get_db
 from app.listings.router import router as listings_router
 from app.marketplace.router import router as marketplace_router
 from app.marketplace.location_router import router as location_router
 from app.marketplace.transactions_router import router as transactions_router
-from app.users.supabase_routes import router as auth_router
+from app.users.routes import router as auth_router
 
 # ---------------------------------------------------------------------------
 # App
@@ -83,6 +85,6 @@ def health():
 
 
 @app.get("/db-check", tags=["Health"])
-def db_check():
-    response = get_supabase().table("users").select("id").limit(1).execute()
-    return {"database": "connected", "rows_checked": len(response.data)}
+def db_check(db: Session = Depends(get_db)):
+    db.execute(text("SELECT 1"))
+    return {"database": "connected"}

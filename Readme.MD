@@ -243,18 +243,14 @@ The initial platform is planned as a web application.
 
 ### Database
 
-* PostgreSQL (Supabase-hosted)
+* PostgreSQL
 
-### Supabase database setup
+### PostgreSQL database setup
 
-1. Create a project at [supabase.com](https://supabase.com).
-2. In **Project Settings → Database**, copy the PostgreSQL connection string.
-   In **Project Settings → API**, also copy the project URL and the
-   `service_role` key for routes that use the Supabase API. The service-role
-   key is server-only: never expose it in the frontend or commit it.
+1. Install PostgreSQL locally or provision a PostgreSQL server.
+2. Create a database named `doki` and a user with permission to access it.
 3. Copy `backend/.env.example` to `backend/.env`.
-4. Set `DATABASE_URL`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY` in
-   `backend/.env`.
+4. Set `DATABASE_URL` in `backend/.env` to your PostgreSQL connection string.
 5. Install the backend requirements and start the API:
 
    ```powershell
@@ -263,15 +259,12 @@ The initial platform is planned as a web application.
    ..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
    ```
 
-6. Verify the connection using `/db-check`. The `users` table must exist in
-   Supabase for this check.
+6. Run the schema in
+   [`backend/db/schema.sql`](backend/db/schema.sql) using `psql` or another
+   PostgreSQL client, then verify the connection using `/db-check`.
 
-SQLAlchemy connects directly to PostgreSQL using `DATABASE_URL`. The Supabase
-client remains available for operations that use the Supabase API.
-
-The PostgreSQL schema is in
-[`backend/db/schema.sql`](backend/db/schema.sql). Run it in the Supabase SQL
-Editor before starting the API.
+SQLAlchemy connects directly to PostgreSQL using `DATABASE_URL`. PostgreSQL is
+the only database backend used by the API.
 
 ### AI
 

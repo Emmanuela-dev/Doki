@@ -5,8 +5,6 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    SUPABASE_URL: str = ""
-    SUPABASE_SERVICE_ROLE_KEY: str = ""
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/doki"
 
     SECRET_KEY: str = "changeme-use-a-real-secret-in-production"
