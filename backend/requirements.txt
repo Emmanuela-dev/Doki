@@ -1,6 +1,4 @@
-# DB driver â€” install the right one for your OS:
-# Linux/Mac:  psycopg2-binary
-# Windows:    psycopg[binary]  (pip install "psycopg[binary]")
+# PostgreSQL driver
 aiofiles==23.2.1
 alembic==1.13.1
 annotated-doc==0.0.5
@@ -38,9 +36,7 @@ passlib[bcrypt]==1.7.4
 Pillow==10.3.0
 protobuf==5.29.6
 proto-plus==1.28.2
-psycopg==3.3.6
-psycopg2-binary==2.9.13
-psycopg-binary==3.3.6
+psycopg[binary]==3.3.6
 pyasn1_modules==0.4.2
 pyasn1==0.6.4
 pycparser==3.0

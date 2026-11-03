@@ -5,19 +5,18 @@ from sqlalchemy.orm import Session
 
 from app.ai import models as ai_models
 from app.ai.routes import router as ai_router
-from app.db.database import Base, engine, get_db
+from app.core.config import settings
+from app.db.database import get_db
 from app.payments.router import router as payments_router
 from app.users import models as user_models
 from app.users.routes import router as users_router
 
 
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(title="DoKi Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=settings.origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

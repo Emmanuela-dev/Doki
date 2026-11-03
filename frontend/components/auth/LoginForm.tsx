@@ -29,7 +29,12 @@ export function LoginForm() {
     try {
       const res = await api.post<TokenResponse>("/api/auth/login", payload);
       await setToken(res.access_token);
-      router.push("/dashboard");
+
+      const redirect = new URLSearchParams(window.location.search).get("redirect");
+      const destination = redirect?.startsWith("/") && !redirect.startsWith("//")
+        ? redirect
+        : "/dashboard";
+      router.replace(destination);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Login failed. Please try again.");
     } finally {

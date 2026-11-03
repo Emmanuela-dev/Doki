@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     SUPABASE_URL: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
-    DATABASE_URL: str = "sqlite:///./doki.db"
+    DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/doki"
 
     SECRET_KEY: str = "changeme-use-a-real-secret-in-production"
     ALGORITHM: str = "HS256"
@@ -25,7 +25,10 @@ class Settings(BaseSettings):
     AWS_REGION: str = "eu-west-1"
 
     APP_ENV: str = "development"
-    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
+    ALLOWED_ORIGINS: str = (
+        "http://localhost:3000,http://localhost:3001,"
+        "http://127.0.0.1:3000,http://172.30.0.1:3000"
+    )
 
     kopokopo_client_id: str = Field(default="", validation_alias=AliasChoices("kopokopo_client_id", "KOPOKOPO_CLIENT_ID"))
     kopokopo_client_secret: str = Field(default="", validation_alias=AliasChoices("kopokopo_client_secret", "KOPOKOPO_CLIENT_SECRET"))

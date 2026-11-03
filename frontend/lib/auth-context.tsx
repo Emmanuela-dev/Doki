@@ -4,6 +4,16 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 import { api } from "@/lib/api/client";
 import type { UserOut } from "@/types/auth";
 
+const TOKEN_COOKIE = "doki-token";
+
+function setCookie(name: string, value: string) {
+  document.cookie = `${name}=${value}; path=/; max-age=604800; SameSite=Lax`;
+}
+
+function clearCookie(name: string) {
+  document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+}
+
 interface AuthContextValue {
   user: UserOut | null;
   loading: boolean;
@@ -30,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(me);
     } catch {
       localStorage.removeItem("doki-token");
+      clearCookie(TOKEN_COOKIE);
       setUser(null);
     } finally {
       setLoading(false);
@@ -42,12 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function setToken(token: string) {
     localStorage.setItem("doki-token", token);
+    setCookie(TOKEN_COOKIE, token);
     setLoading(true);
     await refreshUser();
   }
 
   function logout() {
     localStorage.removeItem("doki-token");
+    clearCookie(TOKEN_COOKIE);
     setUser(null);
   }
 
