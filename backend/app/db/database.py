@@ -13,15 +13,14 @@ def _sqlalchemy_database_url(url: str) -> str:
         return "postgresql+psycopg://" + url[len("postgresql://"):]
     if url.startswith("postgresql+psycopg://"):
         return url
-    raise ValueError(
-        "DATABASE_URL must use a PostgreSQL URL, for example "
-        "postgresql+psycopg://user:password@host:5432/database"
-    )
+    return url
 
 
 DATABASE_URL = _sqlalchemy_database_url(settings.DATABASE_URL)
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args={"check_same_thread": False})
+else:
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

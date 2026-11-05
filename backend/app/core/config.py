@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/doki"
+    DATABASE_URL: str = "sqlite:///./doki.db"
 
     SECRET_KEY: str = "changeme-use-a-real-secret-in-production"
     ALGORITHM: str = "HS256"
